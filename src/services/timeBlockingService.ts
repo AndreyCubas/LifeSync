@@ -97,12 +97,25 @@ export const extBlocksService = {
       created_at: new Date().toISOString(),
     };
     if (isSupabaseConfigured) {
-      const { data, error } = await supabase
-        .from('time_blocks')
-        .insert(block)
-        .select()
-        .single();
-      return { data: data as TimeBlockExtended, error: error?.message ?? null };
+      try {
+        const { data, error } = await supabase
+          .from('time_blocks')
+          .insert(block)
+          .select()
+          .single();
+        
+        if (error) {
+          console.error(`❌ [time_blocks] CREATE (userId: ${userId.slice(0, 8)}...) - Failed:`, error.message);
+          console.error('[RLS Debug]', { payload: block, error });
+          return { data: null, error: error.message };
+        }
+        
+        console.log(`✅ [time_blocks] CREATE (userId: ${userId.slice(0, 8)}...) - Success`);
+        return { data: data as TimeBlockExtended, error: null };
+      } catch (err) {
+        console.error(`❌ [time_blocks] CREATE - Exception:`, err);
+        return { data: null, error: String(err) };
+      }
     }
     const all = ls.forUser<TimeBlockExtended>(userId, 'ext_blocks');
     ls.saveForUser(userId, 'ext_blocks', [...all, block]);
@@ -116,14 +129,27 @@ export const extBlocksService = {
     patch: Partial<Omit<TimeBlockExtended, 'id' | 'user_id' | 'created_at'>>
   ): Promise<DbResult<TimeBlockExtended>> {
     if (isSupabaseConfigured) {
-      const { data, error } = await supabase
-        .from('time_blocks')
-        .update(patch)
-        .eq('id', id)
-        .eq('user_id', userId)
-        .select()
-        .single();
-      return { data: data as TimeBlockExtended, error: error?.message ?? null };
+      try {
+        const { data, error } = await supabase
+          .from('time_blocks')
+          .update(patch)
+          .eq('id', id)
+          .eq('user_id', userId)
+          .select()
+          .single();
+
+        if (error) {
+          console.error(`❌ [time_blocks] UPDATE (userId: ${userId.slice(0, 8)}...) - Failed:`, error.message);
+          console.error('[RLS Debug]', { id, patch, error });
+          return { data: null, error: error.message };
+        }
+
+        console.log(`✅ [time_blocks] UPDATE (userId: ${userId.slice(0, 8)}...) - Success`);
+        return { data: data as TimeBlockExtended, error: null };
+      } catch (err) {
+        console.error(`❌ [time_blocks] UPDATE - Exception:`, err);
+        return { data: null, error: String(err) };
+      }
     }
     const all = ls.forUser<TimeBlockExtended>(userId, 'ext_blocks');
     const updated = all.map(b => b.id === id ? { ...b, ...patch } : b);
@@ -134,13 +160,24 @@ export const extBlocksService = {
   /** Elimina um bloco */
   async delete(userId: string, id: string): Promise<DbResult<null>> {
     if (isSupabaseConfigured) {
-      // SQL: DELETE FROM time_blocks WHERE id = $1 AND user_id = $2
-      const { error } = await supabase
-        .from('time_blocks')
-        .delete()
-        .eq('id', id)
-        .eq('user_id', userId);
-      return { data: null, error: error?.message ?? null };
+      try {
+        const { error } = await supabase
+          .from('time_blocks')
+          .delete()
+          .eq('id', id)
+          .eq('user_id', userId);
+
+        if (error) {
+          console.error(`❌ [time_blocks] DELETE (userId: ${userId.slice(0, 8)}...) - Failed:`, error.message);
+          return { data: null, error: error.message };
+        }
+
+        console.log(`✅ [time_blocks] DELETE (userId: ${userId.slice(0, 8)}...) - Success`);
+        return { data: null, error: null };
+      } catch (err) {
+        console.error(`❌ [time_blocks] DELETE - Exception:`, err);
+        return { data: null, error: String(err) };
+      }
     }
     const all = ls.forUser<TimeBlockExtended>(userId, 'ext_blocks');
     ls.saveForUser(userId, 'ext_blocks', all.filter(b => b.id !== id));

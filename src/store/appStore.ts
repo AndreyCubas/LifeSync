@@ -12,6 +12,8 @@ interface AppState {
   user: User | null;
   setUser: (user: User | null) => void;
   logout: () => Promise<void>;
+  isAuthLoading: boolean;
+  setAuthLoading: (loading: boolean) => void;
 
   // ── Active tab ────────────────────────────────────────────────────────────
   activeTab: 'dashboard' | 'time' | 'fitness' | 'planning';
@@ -46,8 +48,10 @@ export const useAppStore = create<AppState>()(
   devtools(
     (set) => ({
       // Auth
-      user: authService.getSession(),
+      user: null,
       setUser: (user) => set({ user }),
+      isAuthLoading: true,
+      setAuthLoading: (isAuthLoading) => set({ isAuthLoading }),
       logout: async () => {
         await authService.logout();
         set({ user: null, todayBlocks: [], todayMeals: [], workouts: [], exercises: [], events: [] });

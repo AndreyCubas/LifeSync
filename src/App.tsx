@@ -4,6 +4,11 @@
 
 import { useEffect } from "react";
 import { useAppStore } from "./store/appStore";
+import {
+  initializeSupabaseAuth,
+  checkAuthStatus,
+} from "./store/initializeAuth";
+import { printDiagnostics } from "./lib/debug";
 import { useNotificationScheduler } from "./hooks";
 import { AuthPage } from "./pages/AuthPage";
 import { Sidebar } from "./components/Sidebar";
@@ -14,7 +19,30 @@ import { PlanningModule } from "./modules/planning";
 
 export default function App() {
   const user = useAppStore((s) => s.user);
+  const isAuthLoading = useAppStore((s) => s.isAuthLoading);
+  const setAuthLoading = useAppStore((s) => s.setAuthLoading);
   const activeTab = useAppStore((s) => s.activeTab);
+
+  // Initialize Supabase auth listener on app mount
+  useEffect(() => {
+    const initAuth = async () => {
+      // Print diagnostics
+      await printDiagnostics();
+
+      // Set up auth listener
+      initializeSupabaseAuth();
+
+      // Check current auth status
+      const currentUser = await checkAuthStatus();
+      if (currentUser) {
+        useAppStore.getState().setUser(currentUser);
+      }
+
+      setAuthLoading(false);
+    };
+
+    initAuth();
+  }, [setAuthLoading]);
 
   // Start notification scheduler only when logged in
   useNotificationScheduler();
@@ -23,6 +51,17 @@ export default function App() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [activeTab]);
+
+  // Show loading state while auth is being checked
+  if (isAuthLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-slate-50">
+        <div className="text-center">
+          <p className="text-slate-600">A carregar autenticação...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!user) return <AuthPage />;
 
