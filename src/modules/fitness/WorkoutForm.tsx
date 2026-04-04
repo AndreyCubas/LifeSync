@@ -1,6 +1,15 @@
 import { useState } from "react";
 import { WorkoutFormData, ExerciseFormData } from "../../types";
-import { Card, Button } from "../../components/ui";
+import {
+  Card,
+  Button,
+  Input,
+  Textarea,
+  FormField,
+  SectionTitle,
+  TrashIcon,
+  PlusIcon,
+} from "../../components/ui";
 
 interface WorkoutFormProps {
   onSubmit: (data: WorkoutFormData) => void;
@@ -65,69 +74,55 @@ export function WorkoutForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Workout Info */}
-      <Card className="p-6 space-y-4">
-        <h3 className="text-lg font-bold text-slate-900">
-          Informações da Ficha
-        </h3>
+      <Card padding className="space-y-4">
+        <SectionTitle>Informações da Ficha</SectionTitle>
 
         <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Nome da Ficha *
-            </label>
-            <input
+          <FormField label="Nome da Ficha *">
+            <Input
               type="text"
               placeholder="ex: Peito e Costas, Perna..."
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
-          </div>
+          </FormField>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Data
-            </label>
-            <input
+          <FormField label="Data">
+            <Input
               type="date"
               value={form.date}
               onChange={(e) => setForm({ ...form, date: e.target.value })}
-              className="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
-          </div>
+          </FormField>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            Notas da Sessão
-          </label>
-          <textarea
+        <FormField label="Notas da Sessão">
+          <Textarea
             placeholder="ex: Treino mais leve, dores no ombro..."
             value={form.notes}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
-            rows={2}
-            className="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            rows={3}
           />
-        </div>
+        </FormField>
       </Card>
 
       {/* Add Exercise Form */}
-      <Card className="p-6 space-y-4 border-2 border-dashed border-slate-200">
-        <h3 className="text-lg font-bold text-slate-900">
-          Adicionar Exercício
-        </h3>
+      <Card
+        padding
+        className="border-2 border-dashed border-slate-200 space-y-4"
+      >
+        <SectionTitle>Adicionar Exercício</SectionTitle>
 
         <div className="grid grid-cols-2 gap-3">
-          <input
+          <Input
             type="text"
             placeholder="Nome do exercício *"
             value={newExercise.exercise_name}
             onChange={(e) =>
               setNewExercise({ ...newExercise, exercise_name: e.target.value })
             }
-            className="px-3 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
-          <input
+          <Input
             type="number"
             min="1"
             placeholder="Séries"
@@ -135,9 +130,8 @@ export function WorkoutForm({
             onChange={(e) =>
               setNewExercise({ ...newExercise, sets: e.target.value })
             }
-            className="px-3 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
-          <input
+          <Input
             type="number"
             min="1"
             placeholder="Repetições"
@@ -145,9 +139,8 @@ export function WorkoutForm({
             onChange={(e) =>
               setNewExercise({ ...newExercise, reps: e.target.value })
             }
-            className="px-3 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
-          <input
+          <Input
             type="number"
             min="0"
             step="0.5"
@@ -156,88 +149,93 @@ export function WorkoutForm({
             onChange={(e) =>
               setNewExercise({ ...newExercise, weight: e.target.value })
             }
-            className="px-3 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
 
-        <input
+        <Input
           type="text"
           placeholder="Notas do exercício (opcional)"
           value={newExercise.notes}
           onChange={(e) =>
             setNewExercise({ ...newExercise, notes: e.target.value })
           }
-          className="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
 
         <Button
           type="button"
+          variant="outline"
           onClick={handleAddExercise}
-          className="w-full bg-slate-100 text-slate-900 hover:bg-slate-200"
+          icon={<PlusIcon />}
+          className="w-full"
         >
-          + Adicionar Exercício
+          Adicionar Exercício
         </Button>
       </Card>
 
       {/* Exercises List */}
       {exercises.length > 0 && (
-        <Card className="p-6 space-y-3">
-          <h3 className="text-lg font-bold text-slate-900">
-            Exercícios ({exercises.length})
-          </h3>
-          {exercises.map((ex, idx) => (
-            <div
-              key={idx}
-              className="bg-slate-50 rounded-lg p-4 flex items-start justify-between gap-4"
-            >
-              <div className="flex-1">
-                <div className="font-semibold text-slate-900 mb-1">
-                  {ex.exercise_name}
-                </div>
-                <div className="text-sm text-slate-600 space-y-1">
-                  <div>
-                    <span className="font-medium">{ex.sets || "—"}</span> séries
-                    × <span className="font-medium">{ex.reps || "—"}</span> reps{" "}
-                    {ex.weight && (
-                      <span>
-                        @ <span className="font-medium">{ex.weight}kg</span>
-                      </span>
+        <Card padding className="space-y-3">
+          <SectionTitle>Exercícios ({exercises.length})</SectionTitle>
+          <div className="space-y-2">
+            {exercises.map((ex, idx) => (
+              <div
+                key={idx}
+                className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 flex items-start justify-between gap-4 border border-slate-200 dark:border-slate-700"
+              >
+                <div className="flex-1">
+                  <div className="font-semibold text-slate-900 dark:text-white mb-2">
+                    {ex.exercise_name}
+                  </div>
+                  <div className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
+                    <div>
+                      <span className="font-medium">{ex.sets || "—"}</span>{" "}
+                      séries ×{" "}
+                      <span className="font-medium">{ex.reps || "—"}</span> reps{" "}
+                      {ex.weight && (
+                        <span className="text-slate-500 dark:text-slate-400">
+                          @ <span className="font-medium">{ex.weight}kg</span>
+                        </span>
+                      )}
+                    </div>
+                    {ex.notes && (
+                      <div className="italic text-slate-500 dark:text-slate-400">
+                        📝 {ex.notes}
+                      </div>
                     )}
                   </div>
-                  {ex.notes && (
-                    <div className="italic text-slate-500">📝 {ex.notes}</div>
-                  )}
                 </div>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveExercise(idx)}
+                  title="Remover exercício"
+                  className="text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors flex-shrink-0 p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                >
+                  <TrashIcon />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => handleRemoveExercise(idx)}
-                className="text-slate-400 hover:text-rose-600 transition-colors flex-shrink-0"
-              >
-                ✕
-              </button>
-            </div>
-          ))}
+            ))}
+          </div>
         </Card>
       )}
 
       {/* Submit Buttons */}
-      <div className="flex gap-3 justify-end">
-        <button
+      <div className="flex gap-3 justify-end pt-4">
+        <Button
           type="button"
+          variant="ghost"
           onClick={onCancel}
           disabled={isLoading}
-          className="px-4 py-2.5 rounded-lg border border-slate-300 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
         >
           Cancelar
-        </button>
-        <button
+        </Button>
+        <Button
           type="submit"
+          variant="primary"
+          loading={isLoading}
           disabled={isLoading}
-          className="px-4 py-2.5 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 disabled:opacity-50"
         >
           {isLoading ? "Guardando..." : "Guardar Ficha de Treino"}
-        </button>
+        </Button>
       </div>
     </form>
   );
