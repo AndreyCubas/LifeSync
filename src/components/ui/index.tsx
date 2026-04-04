@@ -67,7 +67,7 @@ export function Card({ children, className = '', onClick, hover = false, padding
   return (
     <div
       onClick={onClick}
-      className={`bg-white rounded-2xl border border-slate-100 shadow-sm ${hover ? 'hover:shadow-md hover:border-slate-200 transition-shadow duration-200 cursor-pointer' : ''} ${padding ? 'p-5' : ''} ${className}`}
+      className={`bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm ${hover ? 'hover:shadow-md hover:border-slate-200 transition-shadow duration-200 cursor-pointer' : ''} ${padding ? 'p-5' : ''} ${className}`}
     >
       {children}
     </div>
@@ -88,8 +88,8 @@ export function PageHeader({
   return (
     <div className="flex items-start justify-between mb-7">
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">{title}</h1>
-        {subtitle && <p className="text-sm text-slate-400 mt-1">{subtitle}</p>}
+        <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">{title}</h1>
+        {subtitle && <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">{subtitle}</p>}
       </div>
       {action && <div>{action}</div>}
     </div>
@@ -153,10 +153,10 @@ export function Modal({ open, onClose, title, children, width = 'max-w-lg' }: Mo
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className={`bg-white rounded-2xl shadow-2xl w-full ${width} max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-150`}>
+      <div className={`bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full ${width} max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-150`}>
         <div className="flex items-center justify-between p-6 pb-0">
-          <h3 className="text-base font-bold text-slate-900">{title}</h3>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors">
+          <h3 className="text-base font-bold text-slate-900 dark:text-white">{title}</h3>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
             <XIcon />
           </button>
         </div>
@@ -171,7 +171,7 @@ export function Modal({ open, onClose, title, children, width = 'max-w-lg' }: Mo
 export function FormField({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="mb-4">
-      <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">
+      <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5">
         {label}
       </label>
       {children}
@@ -190,7 +190,7 @@ export function Input({ className = '', error, ...props }: InputProps) {
     <div>
       <input
         {...props}
-        className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors ${error ? 'border-red-300' : 'border-slate-200'} ${className}`}
+        className={`w-full bg-slate-50 dark:bg-slate-900 border rounded-xl px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-600 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors ${error ? 'border-red-300' : 'border-slate-200 dark:border-slate-700'} ${className}`}
       />
       {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
     </div>
@@ -218,7 +218,7 @@ export function Select({ options, className = '', ...props }: SelectProps) {
   return (
     <select
       {...props}
-      className={`w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors cursor-pointer ${className}`}
+      className={`w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-colors cursor-pointer ${className}`}
     >
       {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
@@ -289,12 +289,12 @@ interface MacroBarProps {
 export function MacroBar({ label, value, goal, color, unit = 'g' }: MacroBarProps) {
   const pct = Math.min(100, Math.round((value / goal) * 100));
   return (
-    <div className="mb-3">
-      <div className="flex justify-between text-xs mb-1.5">
+    <div className="mb-3 dark:text-slate-100">
+      <div className="flex justify-between text-xs mb-1.5 text-slate-700 dark:text-slate-300">
         <span className="text-slate-500 font-medium">{label}</span>
         <span className="font-bold text-slate-800">{value}{unit} <span className="text-slate-400 font-normal">/ {goal}{unit}</span></span>
       </div>
-      <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+      <div className="h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
         <div className={`h-full ${color} rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
       </div>
     </div>
@@ -305,9 +305,9 @@ export function MacroBar({ label, value, goal, color, unit = 'g' }: MacroBarProp
 
 export function EmptyState({ icon, text, action }: { icon: ReactNode; text: string; action?: ReactNode }) {
   return (
-    <div className="flex flex-col items-center justify-center py-12 text-slate-300 gap-3">
+    <div className="flex flex-col items-center justify-center py-12 text-slate-300 dark:text-slate-600 gap-3">
       <div className="w-12 h-12 flex items-center justify-center">{icon}</div>
-      <p className="text-sm text-slate-400">{text}</p>
+      <p className="text-sm text-slate-400 dark:text-slate-500">{text}</p>
       {action}
     </div>
   );
@@ -327,7 +327,7 @@ interface ConfirmDialogProps {
 export function ConfirmDialog({ open, title, message, onConfirm, onCancel, confirmLabel = 'Excluir' }: ConfirmDialogProps) {
   return (
     <Modal open={open} onClose={onCancel} title={title} width="max-w-sm">
-      <p className="text-sm text-slate-500 mb-6">{message}</p>
+      <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">{message}</p>
       <div className="flex gap-3 justify-end">
         <Button variant="ghost" onClick={onCancel}>Cancelar</Button>
         <Button variant="danger" onClick={onConfirm}>{confirmLabel}</Button>
@@ -358,14 +358,14 @@ interface StatCardProps {
 
 export function StatCard({ title, value, subtitle, icon, color }: StatCardProps) {
   return (
-    <Card className="flex flex-col gap-3">
+    <Card className="flex flex-col gap-3 bg-white dark:bg-slate-800/60">
       <div className="flex justify-between items-start">
-        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{title}</p>
+        <p className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{title}</p>
         <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${color}`}>{icon}</div>
       </div>
       <div>
-        <p className="text-xl font-extrabold text-slate-900 tracking-tight">{value}</p>
-        {subtitle && <p className="text-xs text-slate-400 mt-0.5">{subtitle}</p>}
+        <p className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">{value}</p>
+        {subtitle && <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{subtitle}</p>}
       </div>
     </Card>
   );
