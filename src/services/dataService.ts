@@ -200,8 +200,23 @@ export const mealsService = {
       notes: form.notes || undefined, created_at: new Date().toISOString(),
     };
     if (isSupabaseConfigured) {
-      const { data, error } = await supabase.from(TABLES.MEALS).insert(meal).select().single();
-      return { data, error: error?.message ?? null };
+      try {
+        // ⚠️ Remove created_at before sending to Supabase (table doesn't have this column)
+        const { created_at, ...mealPayload } = meal;
+        console.log(`📤 [meals] CREATE - Payload:`, mealPayload);
+        const { data, error } = await supabase.from(TABLES.MEALS).insert(mealPayload).select().single();
+        if (error) {
+          console.error(`❌ [meals] CREATE - Failed:`, error.message);
+          console.error('  Schema mismatch? Check field names and types in Supabase');
+          console.error('  Payload:', mealPayload);
+          return { data, error: error.message };
+        }
+        console.log(`✅ [meals] CREATE - Success`);
+        return { data: { ...data!, created_at: meal.created_at }, error: null };
+      } catch (err) {
+        console.error(`❌ [meals] CREATE - Exception:`, err);
+        return { data: null, error: String(err) };
+      }
     }
     const all = ls.forUser<Meal>(userId, 'meals');
     ls.saveForUser(userId, 'meals', [...all, meal]);
@@ -258,8 +273,23 @@ export const workoutsService = {
       date: form.date, notes: form.notes, created_at: new Date().toISOString(),
     };
     if (isSupabaseConfigured) {
-      const { data, error } = await supabase.from(TABLES.WORKOUTS).insert(workout).select().single();
-      return { data, error: error?.message ?? null };
+      try {
+        // ⚠️ Remove created_at and notes before sending to Supabase (table doesn't have these columns)
+        const { created_at, notes, ...workoutPayload } = workout;
+        console.log(`📤 [workouts] CREATE - Payload:`, workoutPayload);
+        const { data, error } = await supabase.from(TABLES.WORKOUTS).insert(workoutPayload).select().single();
+        if (error) {
+          console.error(`❌ [workouts] CREATE - Failed:`, error.message);
+          console.error('  Schema mismatch? Check field names and types in Supabase');
+          console.error('  Payload:', workoutPayload);
+          return { data, error: error.message };
+        }
+        console.log(`✅ [workouts] CREATE - Success`);
+        return { data: { ...data!, created_at: workout.created_at, notes: workout.notes }, error: null };
+      } catch (err) {
+        console.error(`❌ [workouts] CREATE - Exception:`, err);
+        return { data: null, error: String(err) };
+      }
     }
     const all = ls.forUser<Workout>(userId, 'workouts');
     ls.saveForUser(userId, 'workouts', [...all, workout]);
@@ -381,8 +411,23 @@ export const eventsService = {
       created_at: new Date().toISOString(),
     };
     if (isSupabaseConfigured) {
-      const { data, error } = await supabase.from(TABLES.EVENTS).insert(event).select().single();
-      return { data, error: error?.message ?? null };
+      try {
+        // ⚠️ Remove created_at before sending to Supabase (table doesn't have this column)
+        const { created_at, ...eventPayload } = event;
+        console.log(`📤 [events] CREATE - Payload:`, eventPayload);
+        const { data, error } = await supabase.from(TABLES.EVENTS).insert(eventPayload).select().single();
+        if (error) {
+          console.error(`❌ [events] CREATE - Failed:`, error.message);
+          console.error('  Schema mismatch? Check field names and types in Supabase');
+          console.error('  Payload:', eventPayload);
+          return { data, error: error.message };
+        }
+        console.log(`✅ [events] CREATE - Success`);
+        return { data: event, error: null };
+      } catch (err) {
+        console.error(`❌ [events] CREATE - Exception:`, err);
+        return { data: null, error: String(err) };
+      }
     }
     const all = ls.forUser<CalendarEvent>(userId, 'events');
     ls.saveForUser(userId, 'events', [...all, event]);
